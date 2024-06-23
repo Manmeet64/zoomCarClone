@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./Navbar.css";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
     const [loggedInUser, setLoggedInUser] = useState(null);
-
+    let navigate = useNavigate();
     useEffect(() => {
         const fetchLoggedInUser = async () => {
             try {
@@ -42,7 +43,14 @@ const Navbar = () => {
                     className="search-input"
                 />
                 {loggedInUser ? (
-                    <span className="user-name">{loggedInUser.name}</span>
+                    <span
+                        className="user-name"
+                        onClick={() => {
+                            navigate("/profile");
+                        }}
+                    >
+                        {loggedInUser.name}
+                    </span>
                 ) : (
                     <>
                         <a href="/signup">Sign Up</a>

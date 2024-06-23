@@ -7,6 +7,9 @@ import Home from "./pages/Home";
 import CarSearch from "./pages/CarSearch";
 // import Booking from "./pages/Booking";
 import CarDetails from "./pages/CarDetails";
+import Drivers from "./pages/Drivers";
+import BookingDone from "./pages/BookingDone";
+import Profile from "./pages/Profile";
 // import Booking from "./Booking";
 <Home />;
 
@@ -20,6 +23,9 @@ const App = () => {
                 <Route path="/search" element={<CarSearch />} />
                 {/* <Route path="/booking" element={<Booking} /> */}
                 <Route path="/booking/:id" element={<CarDetails />} />
+                <Route path="/drivers" element={<Drivers />} />
+                <Route path="/success/:id" element={<BookingDone />} />
+                <Route path="/profile" element={<Profile />} />
             </Routes>
         </BrowserRouter>
     );

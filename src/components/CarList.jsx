@@ -22,12 +22,13 @@ const CarList = () => {
             console.error("Error fetching cars:", error);
         }
     };
+    console.log(cars);
 
     return (
         <div className="car-list-container">
             {cars.map((car) => (
                 <Car
-                    key={car.id} // Ensure each car has a unique key
+                    carId={car.id} // Ensure each car has a unique key
                     imageUrl={car.images.image1}
                     type={car.type}
                     name={car.name}

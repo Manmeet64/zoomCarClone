@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
-import styles from "./Booking.module.css"; // Import CSS module for Booking
+import { useNavigate } from "react-router-dom";
+import styles from "./Booking.module.css";
 
 const Booking = ({ carId, carPrice }) => {
     const [pickupDateTime, setPickupDateTime] = useState("");
@@ -11,15 +11,16 @@ const Booking = ({ carId, carPrice }) => {
     const [hireDriver, setHireDriver] = useState(false);
     const [homeDelivery, setHomeDelivery] = useState(false);
     const [carName, setCarName] = useState("");
-    const [bookingId, setBookingId] = useState(null); // State to hold booking ID
-    const [hoursDifference, setHoursDifference] = useState(0); // State to hold hours difference
-    const [carPricePerHour, setCarPricePerHour] = useState(0); // State to hold car price per hour
+    const [bookingId, setBookingId] = useState(null);
+    const [hoursDifference, setHoursDifference] = useState(0);
+    const [carPricePerHour, setCarPricePerHour] = useState(0);
 
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
+                // Fetch logged-in user
                 const usersResponse = await fetch(
                     `http://localhost:3000/users?isLoggedIn=true`
                 );
@@ -32,6 +33,7 @@ const Booking = ({ carId, carPrice }) => {
                 }
                 const loggedInUser = usersData[0];
 
+                // Fetch bookings for the logged-in user
                 const bookingsResponse = await fetch(
                     `http://localhost:3000/booking?userId=${loggedInUser.id}`
                 );
@@ -39,9 +41,21 @@ const Booking = ({ carId, carPrice }) => {
                     throw new Error("Failed to fetch booking data");
                 }
                 const bookings = await bookingsResponse.json();
+                console.log(bookings);
+
+                // Find the latest "scheduled" booking
+                const scheduledBookings = bookings
+                    .filter((booking) => booking.status === "scheduled")
+                    .sort(
+                        (a, b) =>
+                            new Date(b.pickUpDateTime) -
+                            new Date(a.pickUpDateTime)
+                    );
+                console.log(scheduledBookings);
+
                 const latestBooking =
-                    bookings.length > 0 ? bookings[bookings.length - 1] : null;
-                console.log(latestBooking);
+                    scheduledBookings.length > 0 ? scheduledBookings[0] : null;
+                console.log(scheduledBookings);
 
                 if (latestBooking) {
                     setBookingId(latestBooking.id);
@@ -55,7 +69,7 @@ const Booking = ({ carId, carPrice }) => {
 
                     setPickupDateTime(
                         pickupDateTime.toLocaleString("en-US", {
-                            timeZone: "Asia/Kolkata", // Set your desired time zone here
+                            timeZone: "Asia/Kolkata",
                             hour12: true,
                             year: "numeric",
                             month: "long",
@@ -66,7 +80,7 @@ const Booking = ({ carId, carPrice }) => {
                     );
                     setDropoffDateTime(
                         dropoffDateTime.toLocaleString("en-US", {
-                            timeZone: "Asia/Kolkata", // Set your desired time zone here
+                            timeZone: "Asia/Kolkata",
                             hour12: true,
                             year: "numeric",
                             month: "long",
@@ -79,6 +93,7 @@ const Booking = ({ carId, carPrice }) => {
                     setPickupLocation(latestBooking.pickUpLocation);
                     setDropoffLocation(latestBooking.dropOffLocation);
 
+                    // Fetch car data
                     const carResponse = await fetch(
                         `http://localhost:3000/cars/${carId}`
                     );
@@ -101,9 +116,13 @@ const Booking = ({ carId, carPrice }) => {
 
                     const initialTotalPrice = calculateTotalPrice(
                         pricePerHour,
-                        hoursDiff
+                        hoursDiff,
+                        latestBooking.driver || false,
+                        homeDelivery
                     );
                     setTotalPrice(initialTotalPrice);
+
+                    setHireDriver(latestBooking.driver || false);
                 }
             } catch (error) {
                 console.error("Error:", error.message);
@@ -111,7 +130,7 @@ const Booking = ({ carId, carPrice }) => {
         };
 
         fetchData();
-    }, [carId, carPrice]);
+    }, [carId, carPrice, homeDelivery]);
 
     const calculateHoursDifference = (pickup, dropoff) => {
         const pickupDate = new Date(pickup);
@@ -120,30 +139,65 @@ const Booking = ({ carId, carPrice }) => {
         return Math.ceil(difference / (1000 * 60 * 60));
     };
 
-    const calculateTotalPrice = (pricePerHour, hoursDifference) => {
-        return (pricePerHour * hoursDifference).toFixed(2);
+    const calculateTotalPrice = (
+        pricePerHour,
+        hoursDifference,
+        driver,
+        delivery
+    ) => {
+        let total = pricePerHour * hoursDifference;
+        if (driver) {
+            total *= 1.1; // Adding 10% if driver is hired
+        }
+        if (delivery) {
+            total += 150; // Adding 150 for home delivery
+        }
+        return total.toFixed(2);
     };
 
-    const handleHireDriver = () => {
-        setHireDriver((prev) => {
-            const newHireDriver = !prev;
-            const updatedPrice = newHireDriver
-                ? (totalPrice * 1.1).toFixed(2)
-                : (totalPrice / 1.1).toFixed(2);
+    const handleHireDriver = async () => {
+        const newHireDriver = !hireDriver;
+        setHireDriver(newHireDriver);
+
+        try {
+            const response = await fetch(
+                `http://localhost:3000/booking/${bookingId}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        driver: newHireDriver,
+                    }),
+                }
+            );
+            if (!response.ok) {
+                throw new Error("Failed to update booking with driver");
+            }
+            const updatedPrice = calculateTotalPrice(
+                carPricePerHour,
+                hoursDifference,
+                newHireDriver,
+                homeDelivery
+            );
             setTotalPrice(updatedPrice);
-            return newHireDriver;
-        });
+        } catch (error) {
+            console.error("Error:", error.message);
+        }
     };
 
     const handleHomeDelivery = () => {
-        setHomeDelivery((prev) => {
-            const newHomeDelivery = !prev;
-            const updatedPrice = newHomeDelivery
-                ? (parseFloat(totalPrice) + 150).toFixed(2)
-                : (parseFloat(totalPrice) - 150).toFixed(2);
-            setTotalPrice(updatedPrice);
-            return newHomeDelivery;
-        });
+        const newHomeDelivery = !homeDelivery;
+        setHomeDelivery(newHomeDelivery);
+
+        const updatedPrice = calculateTotalPrice(
+            carPricePerHour,
+            hoursDifference,
+            hireDriver,
+            newHomeDelivery
+        );
+        setTotalPrice(updatedPrice);
     };
 
     const handleBooking = async () => {
@@ -151,18 +205,19 @@ const Booking = ({ carId, carPrice }) => {
             const response = await fetch(
                 `http://localhost:3000/booking/${bookingId}`,
                 {
-                    method: "PUT",
+                    method: "PATCH",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        pickUpDateTime: pickupDateTime, // Use state value
-                        dropOffDateTime: dropoffDateTime, // Use state value
-                        pickUpLocation: pickupLocation, // Use state value
-                        dropOffLocation: dropoffLocation, // Use state value
+                        pickUpDateTime: pickupDateTime,
+                        dropOffDateTime: dropoffDateTime,
+                        pickUpLocation: pickupLocation,
+                        dropOffLocation: dropoffLocation,
                         totalPrice,
                         carName,
                         status: "completed",
+                        driver: hireDriver,
                     }),
                 }
             );
@@ -170,6 +225,7 @@ const Booking = ({ carId, carPrice }) => {
                 throw new Error("Failed to update booking");
             }
             alert("Booking Updated!");
+            navigate(`/success/${bookingId}`);
         } catch (error) {
             console.error("Error:", error.message);
         }
@@ -180,14 +236,20 @@ const Booking = ({ carId, carPrice }) => {
             const response = await fetch(
                 `http://localhost:3000/booking/${bookingId}`,
                 {
-                    method: "DELETE",
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        status: "cancelled",
+                    }),
                 }
             );
             if (!response.ok) {
-                throw new Error("Failed to delete booking");
+                throw new Error("Failed to update booking status");
             }
-            alert("Booking Cancelled!");
-            navigate("/"); // Navigate to home page
+            alert("Booking Status Updated to Cancelled!");
+            navigate("/");
         } catch (error) {
             console.error("Error:", error.message);
         }
@@ -235,7 +297,7 @@ const Booking = ({ carId, carPrice }) => {
                     className={hireDriver ? styles["selected"] : ""}
                     onClick={handleHireDriver}
                 >
-                    Hire a Driver
+                    {hireDriver ? "Unhire Driver" : "Hire a Driver"}
                 </button>
                 <button
                     className={homeDelivery ? styles["selected"] : ""}
