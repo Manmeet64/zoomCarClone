@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./Navbar.css";
+import styles from "./Navbar.module.css"; // Import styles from module.css
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -27,24 +27,28 @@ const Navbar = () => {
     }, []);
 
     return (
-        <nav className="navbar">
-            <div className="navbar-left">
+        <nav className={styles.navbar}>
+            {" "}
+            {/* Use styles.navbar for className */}
+            <div className={styles["navbar-left"]}>
+                {" "}
+                {/* Use styles["classname"] for dynamic keys */}
                 <a href="/">Home</a>
                 <a href="/drivers">Drivers</a>
                 <a href="/about">About Us</a>
             </div>
-            <div className="navbar-logo">
+            <div className={styles["navbar-logo"]}>
                 <a href="/">LOGO</a>
             </div>
-            <div className="navbar-right">
+            <div className={styles["navbar-right"]}>
                 <input
                     type="text"
                     placeholder="Search"
-                    className="search-input"
+                    className={styles["search-input"]}
                 />
                 {loggedInUser ? (
                     <span
-                        className="user-name"
+                        className={styles["user-name"]}
                         onClick={() => {
                             navigate("/profile");
                         }}

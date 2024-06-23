@@ -160,7 +160,7 @@ const Profile = () => {
                     </div>
                 </div>
             </div>
-            <ProfileSidebar />
+            <ProfileSidebar userId={userData.id} />
         </>
     );
 };

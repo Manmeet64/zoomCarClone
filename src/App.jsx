@@ -10,6 +10,7 @@ import CarDetails from "./pages/CarDetails";
 import Drivers from "./pages/Drivers";
 import BookingDone from "./pages/BookingDone";
 import Profile from "./pages/Profile";
+import MyOrders from "./pages/MyOrders";
 // import Booking from "./Booking";
 <Home />;
 
@@ -26,6 +27,7 @@ const App = () => {
                 <Route path="/drivers" element={<Drivers />} />
                 <Route path="/success/:id" element={<BookingDone />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/orders/:id" element={<MyOrders />} />
             </Routes>
         </BrowserRouter>
     );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, createContext } from "react";
 import { differenceInHours } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import "./Home.css";
+import styles from "./Home.module.css"; // Import your CSS module
 import Navbar from "../components/Navbar";
 import CarList from "../components/CarList";
 import ReviewComponent from "../components/ReviewComponent";
@@ -109,47 +109,55 @@ const Home = () => {
                 value={{ hoursDifference, setHoursDifference }}
             >
                 <Navbar />
-                <div className="home-container">
-                    <h2>Travel Details</h2>
-                    <div className="input-group">
-                        <label>Pick Up Location:</label>
+                <div className={styles.homeContainer}>
+                    <h2 className={styles.heading}>Travel Details</h2>
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>
+                            Pick Up Location:
+                        </label>
                         <input
                             type="text"
                             value={pickUpLocation}
                             onChange={(e) => setPickUpLocation(e.target.value)}
-                            className="input-field"
+                            className={styles.inputField}
                         />
                     </div>
-                    <div className="input-group">
-                        <label>Pick Up Date and Time:</label>
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>
+                            Pick Up Date and Time:
+                        </label>
                         <input
                             type="datetime-local"
                             value={pickUpDateTime}
                             onChange={(e) => setPickUpDateTime(e.target.value)}
-                            className="input-field"
+                            className={styles.inputField}
                         />
                     </div>
-                    <div className="input-group">
-                        <label>Drop Off Location:</label>
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>
+                            Drop Off Location:
+                        </label>
                         <input
                             type="text"
                             value={dropOffLocation}
                             onChange={(e) => setDropOffLocation(e.target.value)}
-                            className="input-field"
+                            className={styles.inputField}
                         />
                     </div>
-                    <div className="input-group">
-                        <label>Drop Off Date and Time:</label>
+                    <div className={styles.inputGroup}>
+                        <label className={styles.label}>
+                            Drop Off Date and Time:
+                        </label>
                         <input
                             type="datetime-local"
                             value={dropOffDateTime}
                             onChange={(e) => setDropOffDateTime(e.target.value)}
-                            className="input-field"
+                            className={styles.inputField}
                         />
                     </div>
                     <button
                         onClick={handleFindVehicle}
-                        className="calculate-button"
+                        className={styles.calculateButton}
                     >
                         Find a Vehicle
                     </button>

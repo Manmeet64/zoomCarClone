@@ -41,7 +41,6 @@ const Booking = ({ carId, carPrice }) => {
                     throw new Error("Failed to fetch booking data");
                 }
                 const bookings = await bookingsResponse.json();
-                console.log(bookings);
 
                 // Find the latest "scheduled" booking
                 const scheduledBookings = bookings
@@ -51,11 +50,9 @@ const Booking = ({ carId, carPrice }) => {
                             new Date(b.pickUpDateTime) -
                             new Date(a.pickUpDateTime)
                     );
-                console.log(scheduledBookings);
 
                 const latestBooking =
                     scheduledBookings.length > 0 ? scheduledBookings[0] : null;
-                console.log(scheduledBookings);
 
                 if (latestBooking) {
                     setBookingId(latestBooking.id);
@@ -147,7 +144,7 @@ const Booking = ({ carId, carPrice }) => {
     ) => {
         let total = pricePerHour * hoursDifference;
         if (driver) {
-            total *= 1.1; // Adding 10% if driver is hired
+            total += hoursDifference * 100; // Add 100 times the number of hours
         }
         if (delivery) {
             total += 150; // Adding 150 for home delivery
@@ -156,8 +153,7 @@ const Booking = ({ carId, carPrice }) => {
     };
 
     const handleHireDriver = async () => {
-        const newHireDriver = !hireDriver;
-        setHireDriver(newHireDriver);
+        const newHireDriver = !hireDriver; // Toggle the hireDriver state
 
         try {
             const response = await fetch(
@@ -175,13 +171,19 @@ const Booking = ({ carId, carPrice }) => {
             if (!response.ok) {
                 throw new Error("Failed to update booking with driver");
             }
+
+            // Update the hireDriver state
+            setHireDriver(newHireDriver);
+
+            // Update the total price based on the new hireDriver state
             const updatedPrice = calculateTotalPrice(
                 carPricePerHour,
                 hoursDifference,
                 newHireDriver,
                 homeDelivery
             );
-            setTotalPrice(updatedPrice);
+
+            setTotalPrice(updatedPrice); // Update total price state
         } catch (error) {
             console.error("Error:", error.message);
         }
@@ -225,7 +227,6 @@ const Booking = ({ carId, carPrice }) => {
                 throw new Error("Failed to update booking");
             }
             alert("Booking Updated!");
-            navigate(`/success/${bookingId}`);
         } catch (error) {
             console.error("Error:", error.message);
         }

@@ -1,0 +1,73 @@
+/* MyOrders.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+.heading {
+    font-size: 32px;
+    text-align: center;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.orders {
+    margin-top: 20px;
+}
+
+.category {
+    margin-bottom: 40px;
+}
+
+.categoryHeading {
+    font-size: 24px;
+    color: #555555;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.statusScheduled {
+    color: #ffa500;
+    font-weight: bold;
+}
+
+.statusCompleted {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.statusCancelled {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tr:hover {
+    background-color: #f1f1f1;
+}

@@ -1,14 +1,30 @@
 /* ProfileSidebar.module.css */
 
+/* html,
+body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+} */
+
 .sidebar {
     width: 250px;
-    background-color: #f0f0f0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    left: 20px; /* Fixed position on the left */
+    top: 50%; /* Vertically center */
+    transform: translateY(-50%); /* Shift up by 50% of its own height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .profile {
-    text-align: center;
     margin-bottom: 20px;
 }
 
@@ -19,46 +35,59 @@
     object-fit: cover;
 }
 
-.options {
+.username {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
     text-align: center;
 }
 
-.username {
-    font-weight: bold;
-    margin-bottom: 10px;
+.options {
+    width: 100%;
 }
 
 .nav {
-    list-style-type: none;
+    list-style: none;
     padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
 .navItem {
+    width: 100%;
     margin-bottom: 10px;
 }
 
 .navLink {
     display: block;
-    padding: 8px 16px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
     text-decoration: none;
-    color: #333;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+    color: #007bff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+    cursor: pointer;
 }
 
 .navLink:hover {
-    background-color: #ddd;
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
 }
 
 .signOutButton {
+    display: block;
     width: 100%;
     padding: 10px;
-    background-color: #5796ff;
-    color: white;
+    text-align: center;
+    background-color: #dc3545;
+    color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
 .signOutButton:hover {

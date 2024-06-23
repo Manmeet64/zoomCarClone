@@ -41,3 +41,7 @@
     border: 1px solid #ccc;
     outline: none;
 }
+
+.user-name {
+    cursor: pointer;
+}

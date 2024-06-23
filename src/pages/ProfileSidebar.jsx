@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ProfileSidebar.module.css";
+import { useNavigate } from "react-router-dom";
 
-const ProfileSidebar = () => {
+const ProfileSidebar = ({ userId }) => {
+    let navigate = useNavigate();
     const [userData, setUserData] = useState({
         id: "",
         name: "",
@@ -57,7 +59,12 @@ const ProfileSidebar = () => {
                 <p className={styles.username}>{userData.name}</p>
                 <ul className={styles.nav}>
                     <li className={styles.navItem}>
-                        <a href="#" className={styles.navLink}>
+                        <a
+                            onClick={() => {
+                                navigate(`/orders/${userData.id}`);
+                            }}
+                            className={styles.navLink}
+                        >
                             My Orders
                         </a>
                     </li>
