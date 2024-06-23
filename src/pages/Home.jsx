@@ -1,8 +1,8 @@
 import React, { useState, useEffect, createContext } from "react";
 import { differenceInHours } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Navbar from "../components/Navbar";
-import Car from "../components/Car";
 import CarList from "../components/CarList";
 import ReviewComponent from "../components/ReviewComponent";
 
@@ -15,26 +15,43 @@ const Home = () => {
     const [dropOffLocation, setDropOffLocation] = useState("");
     const [dropOffDateTime, setDropOffDateTime] = useState("");
     const [hoursDifference, setHoursDifference] = useState(null);
-    const [cars, setCars] = useState([]);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
 
-    // useEffect(() => {
-    //     fetchData();
-    // }, []);
+    const navigate = useNavigate();
 
-    // const fetchData = async () => {
-    //     try {
-    //         const response = await fetch("http://localhost:3000/cars");
-    //         if (response.ok) {
-    //             const data = await response.json();
-    //             console.log(data);
-    //             setCars(data.slice(0, 6)); // Limit to six cars
-    //         } else {
-    //             console.error("Failed to fetch cars");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching cars:", error);
-    //     }
-    // };
+    useEffect(() => {
+        // Set default values for pickUpDateTime and dropOffDateTime to current date and time
+        const currentDateTime = new Date().toISOString().slice(0, 16);
+        setPickUpDateTime(currentDateTime);
+        setDropOffDateTime(currentDateTime);
+
+        // Fetch data from users endpoint
+        fetchUsersData();
+    }, []);
+
+    const fetchUsersData = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/users");
+            if (response.ok) {
+                const users = await response.json();
+                // Find the user who is logged in
+                const loggedInUser = users.find((user) => user.isLoggedIn);
+                console.log(loggedInUser);
+                if (loggedInUser) {
+                    setCurrentUser(loggedInUser);
+                    setIsLoggedIn(true);
+                } else {
+                    setIsLoggedIn(false);
+                    console.warn("No user is currently logged in");
+                }
+            } else {
+                console.error("Failed to fetch users");
+            }
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
 
     const calculateHoursDifference = () => {
         if (pickUpDateTime && dropOffDateTime) {
@@ -44,6 +61,45 @@ const Home = () => {
             setHoursDifference(diffHours);
         } else {
             setHoursDifference(null);
+        }
+    };
+
+    const handleFindVehicle = async () => {
+        if (isLoggedIn && currentUser) {
+            calculateHoursDifference();
+
+            const bookingData = {
+                bookingId: "",
+                pickUpLocation,
+                dropOffLocation,
+                pickUpDateTime,
+                dropOffDateTime,
+                hoursDifference,
+                status: "scheduled",
+                carName: "",
+                userId: currentUser?.id,
+            };
+
+            try {
+                const response = await fetch("http://localhost:3000/booking", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(bookingData),
+                });
+                if (response.ok) {
+                    console.log("Booking created successfully");
+                    navigate("/search");
+                } else {
+                    console.error("Failed to create booking");
+                }
+            } catch (error) {
+                console.error("Error creating booking:", error);
+            }
+        } else {
+            alert("Please register yourself with us :)");
+            navigate("/register");
         }
     };
 
@@ -92,7 +148,7 @@ const Home = () => {
                         />
                     </div>
                     <button
-                        onClick={calculateHoursDifference}
+                        onClick={handleFindVehicle}
                         className="calculate-button"
                     >
                         Find a Vehicle

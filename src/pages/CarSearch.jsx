@@ -104,6 +104,7 @@ const CarSearch = () => {
         setFilters({ ...filters, priceRange: parseInt(event.target.value) });
         applyFilters();
     };
+    console.log(filteredCars);
 
     return (
         <div className="car-search-container">
@@ -244,7 +245,7 @@ const CarSearch = () => {
                 <div className="car-list">
                     {filteredCars.map((car) => (
                         <Car
-                            key={car.id}
+                            carId={car.id}
                             name={car.name}
                             type={car.type}
                             fuelType={car.fuelType}

@@ -10,7 +10,8 @@ const Register = () => {
         email: "",
         gender: "",
         city: "",
-        profileImagePath: "", // Updated to hold image path
+        profileImagePath: "", // Holds image path
+        isLoggedIn: false, // Add isLoggedIn property with default value false
     });
 
     const [previewUrl, setPreviewUrl] = useState("");
@@ -73,8 +74,8 @@ const Register = () => {
             alert("User already registered!");
             navigate("/login");
         } else {
-            // Prepare form data for submissio
-
+            console.log(formData);
+            // Prepare form data for submission
             try {
                 const response = await fetch("http://localhost:3000/users", {
                     method: "POST",
@@ -94,8 +95,10 @@ const Register = () => {
                         gender: "",
                         city: "",
                         profileImagePath: "", // Clear image path
+                        isLoggedIn: false, // Reset to default value
                     });
                     setPreviewUrl("");
+                    navigate("/login");
                 } else {
                     alert("Failed to submit form");
                 }

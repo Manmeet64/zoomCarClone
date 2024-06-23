@@ -1,7 +1,13 @@
 import React from "react";
 import "./Car.css";
+import { useNavigate } from "react-router-dom";
 
 const Car = (props) => {
+    let navigate = useNavigate();
+    function handleRent(id) {
+        navigate(`/booking/${id}`);
+    }
+
     return (
         <div className="car-card">
             <img src={props.imageUrl} alt="Car" className="car-image" />
@@ -19,7 +25,14 @@ const Car = (props) => {
                     <p className="price-per-hour">
                         &#8377;{props.pricePerHour}
                     </p>
-                    <button className="rent-button">Rent Car</button>
+                    <button
+                        className="rent-button"
+                        onClick={() => {
+                            handleRent(props.carId);
+                        }}
+                    >
+                        Rent Car
+                    </button>
                 </div>
             </div>
         </div>

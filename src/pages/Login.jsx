@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "./Login.css"; // Import the CSS file
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
+    const navigate = useNavigate();
     const [mobile, setMobile] = useState("");
     const [message, setMessage] = useState("");
     const [showGetStarted, setShowGetStarted] = useState(false);
@@ -21,10 +22,22 @@ const Login = () => {
             if (response.ok) {
                 const users = await response.json();
                 console.log(users);
+
+                // Check if there is already a logged-in user
+                const loggedInUser = users.find((user) => user.isLoggedIn);
+                if (loggedInUser) {
+                    setMessage("You are already logged in.");
+                    navigate("/"); // Navigate to home page
+                    return;
+                }
+
+                // Proceed with login attempt if no one is logged in
                 const user = users.find((user) => user.mobile === mobile);
                 if (user) {
+                    await updateUserLoginStatus(user.id, true);
                     setMessage("Logged in successfully!");
-                    setShowGetStarted(false); // Hide the "Get Started" button
+                    setShowGetStarted(false); //Hide the show button
+                    navigate("/");
                 } else {
                     setMessage("Account not found.");
                     setShowGetStarted(true); // Show the "Get Started" button
@@ -35,6 +48,44 @@ const Login = () => {
         } catch (error) {
             console.error("Error fetching user data:", error);
             setMessage("An error occurred while fetching user data.");
+        }
+    };
+
+    const updateUserLoginStatus = async (userId, status) => {
+        try {
+            // Fetch existing user data
+            const userResponse = await fetch(
+                `http://localhost:3000/users/${userId}`
+            );
+            if (userResponse.ok) {
+                const userData = await userResponse.json();
+
+                // Update only the isLoggedIn property
+                const updatedUserData = { ...userData, isLoggedIn: status };
+
+                // Send the updated user data back to the server
+                const updateResponse = await fetch(
+                    `http://localhost:3000/users/${userId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(updatedUserData),
+                    }
+                );
+
+                if (!updateResponse.ok) {
+                    console.error("Failed to update user login status");
+                    setMessage("Failed to update login status.");
+                }
+            } else {
+                console.error("Failed to fetch user details for updating");
+                setMessage("Failed to fetch user details for updating.");
+            }
+        } catch (error) {
+            console.error("Error updating user login status:", error);
+            setMessage("An error occurred while updating login status.");
         }
     };
 

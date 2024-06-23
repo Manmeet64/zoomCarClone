@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import CarSearch from "./pages/CarSearch";
+// import Booking from "./pages/Booking";
+import CarDetails from "./pages/CarDetails";
 // import Booking from "./Booking";
 <Home />;
 
@@ -17,6 +19,7 @@ const App = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/search" element={<CarSearch />} />
                 {/* <Route path="/booking" element={<Booking} /> */}
+                <Route path="/booking/:id" element={<CarDetails />} />
             </Routes>
         </BrowserRouter>
     );
